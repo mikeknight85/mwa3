@@ -17,7 +17,6 @@ MEDIA_URL = "/media/"
 # APPNAME is user-visible web app name
 APPNAME = os.getenv('APPNAME', 'MunkiWebAdmin')
 DEFAULT_MANIFEST = os.getenv('DEFAULT_MANIFEST', 'serial_number')
-REPO_MANAGEMENT_ONLY = os.getenv("REPO_MANAGEMENT_ONLY", 'False').lower() in ('true', '1', 't')
 SECRET_KEY = os.environ.get("SECRET_KEY", "CHANGEME!!!")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost 127.0.0.1 [::1]").split(" ")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost").split(" ")
@@ -65,9 +64,7 @@ LOGIN_EXEMPT_URLS = ()
 # django ldap auth
 USE_LDAP = False
 
-
 # Active Users
-
 SESSION_COOKIE_AGE = 3600  # 1 hour
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
@@ -94,13 +91,10 @@ INSTALLED_APPS = [
     'catalogs',
     'pkgsinfo',
     'manifests',
-    'inventory',
     'process',
-    'reports',
     'icons',
     'santa',
     'munkiwebadmin',
-    # New monitoring app
     'monitoring',
 ]
 

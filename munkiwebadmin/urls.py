@@ -14,11 +14,7 @@ try:
 	BASE_DIR = settings.BASE_DIR
 except:
 	BASE_DIR = ""
-      
-try:
-	REPO_MANAGEMENT_ONLY = settings.REPO_MANAGEMENT_ONLY
-except:
-	REPO_MANAGEMENT_ONLY = False
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -27,20 +23,15 @@ urlpatterns = [
     url(r'^oauth2/', include('django_auth_adfs.urls')),
     url(r'^api/', include('api.urls')),
     url(r'^manifests/', include('manifests.urls')),
-    url(r'^reports/', include('reports.urls')),
     url(r'^catalogs/', include('catalogs.urls')),
     url(r'^pkgsinfo/', include('pkgsinfo.urls')),
     url(r'^icons/', include('icons.urls')),
-    url(r'^inventory/', include('inventory.urls')),
     url(r'^santa/', include('santa.urls')),
     url(r'^makecatalogs/', include('process.urls')),
     url(r'^monitoring/', include('monitoring.urls')),
 ]
 
-if REPO_MANAGEMENT_ONLY:
-    urlpatterns.append(url(r'^$', RedirectView.as_view(url='/manifests/')))
-else:
-    urlpatterns.append(url(r'^$', RedirectView.as_view(url='/reports/')))
+urlpatterns.append(url(r'^$', RedirectView.as_view(url='/manifests/')))
 
 # comment out the following if you are serving
 # static files a different way

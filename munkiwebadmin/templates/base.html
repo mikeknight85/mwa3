@@ -63,33 +63,12 @@
 
                     <!-- ======= Navigation links for sidebar ======== -->
                     <ul class="sidebar-nav nav flex-column nav-pills">
-                        {% if REPO_MANAGEMENT_ONLY == False %}
-                        <li class="sidebar-header">Report tools</li>
-                        {% endif %}
-                        {% if perms.reports.can_view_dashboard and REPO_MANAGEMENT_ONLY == False %}
                         <li class="">
-                            <a href="{% url 'dashboard' %}" class="sidebar-link nav-link{% if page == 'dashboard' %} active{% endif %}">
+                            <a href="" class="sidebar-link nav-link">
                                 <i class="fa-solid fa-gauge fa-fw"></i>
                                 Dashboard
                             </a>
                         </li>
-                        {% endif %}
-                        {% if perms.reports.can_view_reports and REPO_MANAGEMENT_ONLY == False %}
-                        <li class="">
-                            <a href="{% url 'reports' %}" class="sidebar-link nav-link{% if page == 'reports' %} active{% endif %}">
-                                <i class="fa-solid fa-desktop fa-fw"></i>
-                                Computer
-                            </a>
-                        </li>
-                        {% endif %}
-                        {% if perms.reports.can_view_reports and REPO_MANAGEMENT_ONLY == False %}
-                        <li class="">
-                            <a href="{% url 'inventory' %}items" class="sidebar-link nav-link{% if page == 'inventory' %} active{% endif %}">
-                                <i class="fa-solid fa-warehouse fa-fw"></i>
-                                Inventory
-                            </a>
-                        </li>
-                        {% endif %}
                         <li class="sidebar-header">Munki repo admin</li>
                         {% if perms.manifests.view_manifestfile %}
                         <li class="">
@@ -112,8 +91,7 @@
                                 Icons
                             </a>
                         </li>
-                        {% endif %}
-                        
+                        {% endif %}  
                     </ul>
                 </div>
             </aside>
