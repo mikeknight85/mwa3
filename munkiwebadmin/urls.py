@@ -6,10 +6,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
 
+from .views import dashboard
+
 from django.contrib import admin
 admin.autodiscover()
 
-import os
 try:
 	BASE_DIR = settings.BASE_DIR
 except:
@@ -22,6 +23,7 @@ urlpatterns = [
     url(r'^logout/', logout_then_login, name='logout'),
     url(r'^oauth2/', include('django_auth_adfs.urls')),
     url(r'^api/', include('api.urls')),
+    url(r'^dashboard/', dashboard, name="dashboard"),
     url(r'^manifests/', include('manifests.urls')),
     url(r'^catalogs/', include('catalogs.urls')),
     url(r'^pkgsinfo/', include('pkgsinfo.urls')),
@@ -31,7 +33,7 @@ urlpatterns = [
     url(r'^monitoring/', include('monitoring.urls')),
 ]
 
-urlpatterns.append(url(r'^$', RedirectView.as_view(url='/manifests/')))
+urlpatterns.append(url(r'^$', RedirectView.as_view(url='/dashboard/')))
 
 # comment out the following if you are serving
 # static files a different way
