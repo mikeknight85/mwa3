@@ -20,8 +20,7 @@
         {% load static %}
         <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" href='{% get_static_prefix %}css/bootstrap.min.css' type="text/css" media="all" />
-        <link rel="stylesheet" href='{% get_static_prefix %}css/dataTables.bootstrap5.min.css' type="text/css" media="all" />
-        <link rel="stylesheet" href='{% get_static_prefix %}css/responsive.bootstrap5.min.css' type="text/css" media="all" />
+        <link rel="stylesheet" href='{% get_static_prefix %}css/datatables.min.css' type="text/css" media="all" />
 
         <!-- Custom Fonts -->
         <link href="{% get_static_prefix %}fonts/fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
@@ -40,10 +39,7 @@
         <script type='text/javascript' src="{% get_static_prefix %}js/bootstrap.bundle.js"></script>
         <script type='text/javascript' src="{% get_static_prefix %}js/jquery.min.js"></script>
         <script type='text/javascript' src="{% get_static_prefix %}js/jquery-ui.min.js"></script>
-        <script type='text/javascript' src='{% get_static_prefix %}js/jquery.dataTables.min.js'></script>
-        <script type='text/javascript' src='{% get_static_prefix %}js/dataTables.responsive.min.js'></script>
-        <script type='text/javascript' src='{% get_static_prefix %}js/dataTables.bootstrap5.min.js'></script>
-        <script type='text/javascript' src='{% get_static_prefix %}js/responsive.bootstrap5.min.js'></script>
+        <script type='text/javascript' src='{% get_static_prefix %}js/datatables.min.js'></script>
         
         {% block java_script %}{% endblock %}
 
@@ -70,12 +66,23 @@
 
                     <!-- ======= Navigation links for sidebar ======== -->
                     <ul class="sidebar-nav nav flex-column nav-pills">
+                        {% if user.is_authenticated %}
                         <li class="">
                             <a class="sidebar-link nav-link{% if page == 'dashboard' %} active{% endif %}" href="{% url 'dashboard' %}">
                                 <i class="fa-solid fa-gauge fa-fw"></i>
                                 Dashboard
                             </a>
                         </li>
+                        {% endif %}
+                        {% if ENABLE_REPO_VIEW %}
+                        <li class="">
+                            <a class="sidebar-link nav-link{% if page == 'packages' %} active{% endif %}" href="{% url 'list_available_packages' %}">
+                                <i class="fa-solid fa-cube fa-fw"></i>
+                                Packages
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if user.is_authenticated %}
                         <li class="sidebar-header">Munki repo admin</li>
                         {% if perms.manifests.view_manifestfile %}
                         <li class="">
@@ -99,6 +106,7 @@
                             </a>
                         </li>
                         {% endif %}  
+                        {% endif %}
                     </ul>
                 </div>
             </aside>
@@ -118,6 +126,7 @@
                     
                     <div class="navbar-collapse">
                         <ul class="navbar-nav">
+                            {% if user.is_authenticated %}
                             <li class="nav-item dropdown">
                                 <button class="btn" id="activeUsersBadge" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fa-solid fa-user-clock"></i>
@@ -127,6 +136,7 @@
                                       </span>
                                 </button>
                             </li>
+                            {% endif %}
                             <li class="nav-item dropdown">
                                 <button class="btn me-2" id="bd-theme" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i id="bd-theme-selector" class="fa-solid fa-circle-half-stroke"></i>
@@ -148,13 +158,13 @@
                                     <img alt="{{ username }}" src="{{ userImage }}" class="avatar rounded-circle img-fluid" />
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
+                                    {% if user.is_authenticated %}
                                     <a href="/admin/" target="_blank" class="dropdown-item"><i class="fas fa-chalkboard-teacher fa-fw"></i>
                                         Admin
                                     </a>
-                                    {% if user.is_authenticated %}
-                                        <a href="/logout/" class="dropdown-item"><i class="fas fa-sign-out-alt fa-fw"></i>
-                                            Logout
-                                        </a>
+                                    <a href="/logout/" class="dropdown-item"><i class="fas fa-sign-out-alt fa-fw"></i>
+                                        Logout
+                                    </a>
                                     {% else %}
                                         <a href="/login/" class="dropdown-item"><i class="fas fa-sign-out-alt fa-fw"></i>
                                             Login

@@ -19,16 +19,16 @@ def dashboard(request):
         if medadata:
             creation_date = medadata.get('creation_date', None)
 
-        # Prüfe, ob ein Dictionary mit dem gleichen Namen existiert
+        # check if the app already exists in the list
         existing_app = next((app for app in app_list if app['name'] == item['name']), None)
 
         if existing_app:
-            # Falls der Name schon existiert, füge die Version hinzu (falls nicht doppelt)
+            # if the version is not already in the list, add it
             if item['version'] not in existing_app["version"]:
                 existing_app["version"].append(item['version'])
                 existing_app["creation_date"] = creation_date
         else:
-            # Falls der Name noch nicht existiert, erstelle einen neuen Eintrag
+            # if the app is not in the list, add it
             app = {
                 "name": item['name'],
                 "version": [item['version']],
