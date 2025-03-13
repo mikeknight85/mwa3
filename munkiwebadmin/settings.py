@@ -53,8 +53,9 @@ if os.environ.get('WEBSITE_HOSTNAME'):
 # debug mode
 DEBUG = os.getenv("DEBUG", 'False').lower() in ('true', '1', 't')
 
-#not changing this
-MUNKISCRIPTS_PATH = os.path.join(BASE_DIR, 'munkiscripts', 'build')
+# package display settings
+ENABLE_REPO_VIEW = os.getenv('ENABLE_REPO_VIEW', 'False').lower() in ('true', '1', 't')
+CATALOGS_TO_DISPLAY = os.getenv('CATALOGS_TO_DISPLAY', '[]').split()
 
 # CORS settings
 CORS_ORIGIN_ALLOW_ALL = DEBUG
@@ -281,9 +282,12 @@ REST_FRAMEWORK = {
 # azure adfs settings
 LOGIN_EXCLUDE_URLS = []
 if EXCLUDE_API:
-    LOGIN_EXCLUDE_URLS = [
-        '^api',
-    ]
+    LOGIN_EXCLUDE_URLS.append('^api',)
+
+if ENABLE_REPO_VIEW:
+    LOGIN_EXCLUDE_URLS.append('^packages')
+    LOGIN_EXCLUDE_URLS.append('^pkgsinfo/_package_json')
+    LOGIN_EXCLUDE_URLS.append('^')
 
 AUTH_ADFS = {
     'AUDIENCE': CLIENT_ID,
@@ -318,11 +322,10 @@ if CLIENT_SECRET:
         AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + (AdfsAuthCodeBackend, AdfsAccessTokenBackend)
 
 LOGIN_URL='/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dasboard/'
 
 if ENTRA_ONLY:
     LOGIN_URL = "django_auth_adfs:login"
-    LOGIN_REDIRECT_URL = '/'
 
 ADMINS = (
      ('Local Admin', 'admin@example.com'),
