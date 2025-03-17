@@ -9,7 +9,9 @@
         <table class="table table-striped wraptext" id='packageTable'>
           <thead>
               <tr>
+                  {% if show_icons %}
                   <th>Icon</th>
+                  {% endif %}
                   <th>Display Name</th>
                   <th>Developer</th>
                   <th>Catalogs</th>
@@ -24,37 +26,63 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  let table = $('#packageTable').DataTable({
-        "ajax": "{% url 'list_available_packages_json' %}",
-        "processing": true,
-        "paging": false,
-        "dom": 'lrt',
-        "scrollY": 'calc(100vh - 190px)',
-        "columns": [
-            { "data": "icon", "render": function (data) {
-                return data ? `<img src="${data}" style="width:40px;height:40px;">` : "";
-            }},
-            { "data": "display_name" },
-            { "data": "developer" },
-            { "data": "catalogs", "render": function (data) {
-                return data.map(catalog => `<span class="badge text-bg-primary">${catalog.name} (${catalog.version})</span>`).join("<br>");
-            }}
-        ],
-        "order": [[1, "asc"]],
-        "columnDefs": [
-            { "orderable": false, "targets": 0 },
-            { "orderable": true, "targets": 1 },
-            { "orderable": true, "targets": 2 }, 
-            { "orderable": false, "targets": 3 }
-        ]
-    });
-
-    $('#listSearchField').on('keyup', function () {
-        table.search(this.value).draw();
-    });
-});
-</script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let tableColumns = [
+        {% if show_icons %}
+        { "data": "icon", "render": function (data) {
+            return data ? `<img src="${data}" style="width:40px;height:40px;">` : "";
+        }, "className": "align-middle text-center"},
+        {% endif %}
+        { "data": "display_name", "render": function (data) {
+            return `<span class="align-middle">${data}</span>`;
+        }, "className": "align-middle"},
+        { "data": "developer", "render": function (data) {
+            return `<span class="align-middle">${data}</span>`;
+        }, "className": "align-middle"},
+        { "data": "catalogs", "render": function (data) {
+            return data.map(catalog => 
+                `<span class="badge text-bg-primary align-middle">${catalog.name} (${catalog.version})</span>`
+            ).join("<br>");
+        }, "className": "align-middle"}
+    ];
+  
+    let tableOrder = [
+        {% if show_icons %}
+        [1, "asc"]
+        {% else %}
+        [0, "asc"]
+        {% endif %}
+    ];
+  
+    let columnDefs = [
+        {% if show_icons %}
+        { "orderable": false, "targets": 0 },
+        { "orderable": true, "targets": 1 },
+        { "orderable": true, "targets": 2 }, 
+        { "orderable": false, "targets": 3 }
+        {% else %}
+        { "orderable": true, "targets": 0 },
+        { "orderable": true, "targets": 1 }, 
+        { "orderable": false, "targets": 2 }
+        {% endif %}
+    ];
+  
+    let table = $('#packageTable').DataTable({
+          "ajax": "{% url 'list_available_packages_json' %}",
+          "processing": true,
+          "paging": false,
+          "dom": 'lrt',
+          "scrollY": 'calc(100vh - 190px)',
+          "columns": tableColumns,
+          "order": tableOrder,
+          "columnDefs": columnDefs
+      });
+  
+      $('#listSearchField').on('keyup', function () {
+          table.search(this.value).draw();
+      });
+  });
+  </script>
 {% endblock %}
 
 

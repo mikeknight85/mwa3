@@ -40,6 +40,17 @@ def index(request):
     """
     imgString = static('img/placeholder.jpg')  # Default image if no profile picture is found
 
+
+    # if user is not authenticated, return the default image
+    if not request.user.is_authenticated:
+        return {
+            'ENABLE_REPO_VIEW': ENABLE_REPO_VIEW,
+            'ENTRA_ONLY': ENTRA_ONLY,
+            'TENANT_ID': TENANT_ID,
+            'APPNAME': APPNAME,
+            'userImage': imgString
+        }
+
     if not TENANT_ID:
         # If Azure AD is not used, attempt to retrieve the image from LDAP
         try:

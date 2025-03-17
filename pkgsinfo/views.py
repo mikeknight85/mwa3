@@ -23,6 +23,12 @@ import base64
 STATIC_URL = settings.STATIC_URL
 LOGGER = logging.getLogger('munkiwebadmin')
 
+# load settings
+try:
+    SHOW_ICONS = settings.SHOW_ICONS
+except:
+    SHOW_ICONS = False
+
 
 def get_icon_url(pkginfo_plist):
     '''Attempt to build an icon url for the pkginfo'''
@@ -231,24 +237,27 @@ def list_available_packages_json(request):
                 package_item['catalogs'].append(catalog_version)
 
             # Load the icon as a Base64-encoded string
-            icon_name = item.get('icon_name', item['name'] + '.png')
-            icon_list = MunkiRepo.list('icons')
+            if SHOW_ICONS:
+                icon_name = item.get('icon_name', item['name'] + '.png')
+                icon_list = MunkiRepo.list('icons')
 
-            if icon_name in icon_list:
-                icon_path = MunkiRepo.get('icons', icon_name)
-                if isinstance(icon_path, str):  # If it's a file path
-                    try:
-                        with open(icon_path, "rb") as icon_file:
-                            encoded_icon = base64.b64encode(icon_file.read()).decode("utf-8")
-                            package_item['icon'] = f"data:image/png;base64,{encoded_icon}"
-                    except FileNotFoundError:
-                        package_item['icon'] = None
-                else:
-                    package_item['icon'] = f"data:image/png;base64,{base64.b64encode(icon_path).decode('utf-8')}"
+                if icon_name in icon_list:
+                    icon_path = MunkiRepo.get('icons', icon_name)
+                    if isinstance(icon_path, str):  # If it's a file path
+                        try:
+                            with open(icon_path, "rb") as icon_file:
+                                encoded_icon = base64.b64encode(icon_file.read()).decode("utf-8")
+                                package_item['icon'] = f"data:image/png;base64,{encoded_icon}"
+                        except FileNotFoundError:
+                            package_item['icon'] = None
+                    else:
+                        package_item['icon'] = f"data:image/png;base64,{base64.b64encode(icon_path).decode('utf-8')}"
+                        
             package_dict[package_name] = package_item
 
     return JsonResponse({"data": list(package_dict.values())}, safe=False)
 
 def list_available_packages(request):
-    context = {'page': 'packages'}
+    context = {'page': 'packages',
+               'show_icons': SHOW_ICONS }
     return render(request, 'pkgsinfo/package_list.html', context=context)

@@ -56,6 +56,7 @@ DEBUG = os.getenv("DEBUG", 'False').lower() in ('true', '1', 't')
 # package display settings
 ENABLE_REPO_VIEW = os.getenv('ENABLE_REPO_VIEW', 'False').lower() in ('true', '1', 't')
 CATALOGS_TO_DISPLAY = os.getenv('CATALOGS_TO_DISPLAY', '[]').split()
+SHOW_ICONS = os.getenv('SHOW_ICONS', 'False').lower() in ('true', '1', 't')
 
 # CORS settings
 CORS_ORIGIN_ALLOW_ALL = DEBUG
