@@ -73,22 +73,22 @@ function initIconsTable() {
             "targets": 1,
             "render": render_name,
         },],
-        'sDom': '"top"i',
+        "dom": 'lrt',
         "paging":false,
-        "scrollY": 'calc(100vh - 350px)',
+        "scrollY": 'calc(100vh - 270px)',
         "scrollCollapse": true,
         "bFilter": true,
         "bStateSave": true,
         "aaSorting": [[0,'asc']]
-        });
-        // start our monitoring timer loop
-        monitor_icon_list();
-        // tie our search field to the table
-        var thisTable = $('#list_items').DataTable(),
-        searchField = $('#listSearchField');
-        searchField.keyup(function(){
-            thisTable.search($(this).val()).draw();
-        });
+    });
+    // start our monitoring timer loop
+    monitor_icon_list();
+    // tie our search field to the table
+    var thisTable = $('#list_items').DataTable(),
+    searchField = $('#listSearchField');
+    searchField.keyup(function(){
+        thisTable.search($(this).val()).draw();
+    });
 }
 
 

@@ -243,15 +243,7 @@ def list_available_packages_json(request):
 
                 if icon_name in icon_list:
                     icon_path = MunkiRepo.get('icons', icon_name)
-                    if isinstance(icon_path, str):  # If it's a file path
-                        try:
-                            with open(icon_path, "rb") as icon_file:
-                                encoded_icon = base64.b64encode(icon_file.read()).decode("utf-8")
-                                package_item['icon'] = f"data:image/png;base64,{encoded_icon}"
-                        except FileNotFoundError:
-                            package_item['icon'] = None
-                    else:
-                        package_item['icon'] = f"data:image/png;base64,{base64.b64encode(icon_path).decode('utf-8')}"
+                    package_item['icon'] = f"data:image/png;base64,{base64.b64encode(icon_path).decode('utf-8')}"
                         
             package_dict[package_name] = package_item
 

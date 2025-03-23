@@ -133,8 +133,8 @@ function initManifestsTable() {
             global: false,
         },
         "columnDefs": [{
-        "targets": 0,
-        "render": render_name,
+            "targets": 0,
+            "render": render_name,
         }],
         "paging":false,
         "scrollY": 'calc(100vh - 270px)',

@@ -5,7 +5,6 @@ pkgsinfo/models.py
 from django.db import models
 import os
 import logging
-import plistlib
 import functools
 from collections import defaultdict
 from distutils.version import LooseVersion
