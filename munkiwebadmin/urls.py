@@ -5,7 +5,6 @@ from  django.contrib.auth.views import LoginView, logout_then_login
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
-from django.shortcuts import redirect
 from django.core.exceptions import ImproperlyConfigured
 
 from .views import dashboard
@@ -38,6 +37,7 @@ urlpatterns = [
     url(r'^santa/', include('santa.urls')),
     url(r'^makecatalogs/', include('process.urls')),
     url(r'^monitoring/', include('monitoring.urls')),
+    url(r'^vulnerabilities/', include('vulnerabilities.urls')),
 ]
 
 if ENABLE_REPO_VIEW:

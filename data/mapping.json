@@ -1,0 +1,18 @@
+{
+    "GoogleChrome": {
+        "nist_vendor": "google",
+        "nist_product": "chrome"
+    },
+    "Firefox": {
+        "nist_vendor": "mozilla",
+        "nist_product": "firefox"
+    },
+    "LibreOffice": {
+        "nist_vendor": "libreoffice",
+        "nist_product": "libreoffice"
+    },
+    "Java 8": {
+        "nist_vendor": "oracle",
+        "nist_product": "jdk"
+    }
+}

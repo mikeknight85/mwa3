@@ -98,6 +98,7 @@ INSTALLED_APPS = [
     'santa',
     'munkiwebadmin',
     'monitoring',
+    'vulnerabilities'
 ]
 
 MIDDLEWARE = [

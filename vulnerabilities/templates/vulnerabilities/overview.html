@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block page_title %}Vulnerabilities <span class="badge bg-secondary" id="item-count-badge">0</span>{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <table id="vulnerabilities-table" class="table table-striped wraptext">
+                    <thead>
+                        <tr>
+                            <th>Vulnerability ID</th>
+                            <th>Application</th>
+                            <th>Sensitivity</th>
+                            <th>CVSS Score</th>
+                            <th>Age</th>
+                            <th>Patched Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  $(document).ready(function () {
+    let table = $('#vulnerabilities-table').DataTable({
+      ajax: {
+        url: "{% url 'vulnerabilities_api_overview' %}",
+        dataSrc: ''
+      },
+      processing: true,
+      paging: false,
+      dom: 'lrt',
+      scrollY: 'calc(100vh - 190px)',
+      columns: [
+        {
+          data: 'url',
+          render: function (data, type, row) {
+            return `<a href="${data}" target="_blank">${row.cve_id}</a>`;
+          }
+        },
+        {
+          data: 'display_name',
+          render: function (data, type, row) {
+            return `<div class="d-flex align-items-center gap-2">
+                        <img src="${row.icon}" alt="" style="width:24px; height:24px;">
+                        ${data}
+                    </div>`;
+            }
+        },
+        {
+          data: 'severity',
+          render: function (data, type, row) {
+            const level = data.toUpperCase();
+            const badgeMap = {
+              'LOW': 'success',
+              'MEDIUM': 'warning',
+              'HIGH': 'danger',
+              'CRITICAL': 'danger'
+            };
+            const barCountMap = {
+              'LOW': 1,
+              'MEDIUM': 2,
+              'HIGH': 3,
+              'CRITICAL': 4
+            };
+            const badgeColor = badgeMap[level] || 'secondary';
+            const barCount = barCountMap[level] || 0;
+            let bars = '';
+            for (let i = 0; i < 4; i++) {
+              bars += `<div class="me-1 rounded" style="width: 24px; height: 6px; background-color: ${i < barCount ? `var(--bs-${badgeColor})` : '#e9ecef'};"></div>`;
+            }
+
+            return `
+              <div class="position-relative">
+                <span class="badge bg-${badgeColor} mb-1">${data}</span>
+                <div class="d-flex">${bars}</div>
+              </div>
+            `;
+          }
+        },
+        { data: 'score' },
+        {
+          data: 'published',
+          render: function (data, type, row) {
+            if (!data) return '<span class="text-muted">n/a</span>';
+            const published = new Date(data);
+            return published.toISOString().slice(0, 10); // YYYY-MM-DD
+          }
+        },
+        {
+          data: 'patched_version',
+          render: function (data, type, row) {
+            if (!data) return '<span class="text-muted">–</span>';
+            return `<span class="badge bg-${row.fixed_label_color}">${data}</span>`;
+          }
+        }
+      ],
+      order: [[0, 'desc']],
+      initComplete: function(settings, json) {
+        if (json) {
+          $("#item-count-badge").text(json.length);
+        }
+      }
+    });
+
+    $('#listSearchField').on('keyup', function () {
+      table.search(this.value).draw();
+    });
+  });
+</script>
+{% endblock %}
