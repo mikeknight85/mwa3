@@ -135,7 +135,6 @@ def vulnerabilities_api_overview(request):
             cves_items.append({
                 "name": name,
                 "display_name": latest_item["display_name"],
-                "developer": latest_item["developer"],
                 "icon": latest_item.get("icon", ""),
                 "version": version,
                 "cve_id": cve["cve"]["id"],
