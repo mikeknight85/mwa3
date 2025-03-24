@@ -1,10 +1,9 @@
-
 import json
 import os
 
 import requests
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
@@ -92,6 +91,10 @@ def vulnerabilities_api_overview(request):
         version = latest_item["version"]
         mapping = mapping_data[name]
 
+        # Use the years_threshold value from the mapping for each product
+        years_threshold = mapping.get("years_threshold", 4)  # Default to 4 years if not present
+        four_years_ago = datetime.now() - timedelta(days=years_threshold * 365)
+
         # get icon
         icon_name = latest_item.get('icon_name', latest_item['name'] + '.png')
         icon_list = MunkiRepo.list('icons')
@@ -107,6 +110,13 @@ def vulnerabilities_api_overview(request):
             severity = classify_severity(score)
             patched_version = extract_patch_version(cve)
 
+            # Check if CVE is older than the threshold years and skip it if so
+            published = cve["cve"].get("published")
+            if published:
+                published_date = datetime.fromisoformat(published.replace("Z", "+00:00"))
+                if published_date < four_years_ago:  # If the CVE's published date is earlier than the threshold, skip it
+                    continue  # Skip rendering this CVE
+
             if patched_version:
                 try:
                     if parse_version(version) >= parse_version(patched_version):
@@ -120,10 +130,6 @@ def vulnerabilities_api_overview(request):
 
             url = f"https://nvd.nist.gov/vuln/detail/{cve['cve']['id']}"
 
-            published = cve["cve"].get("published")
-            if published:
-                published = datetime.fromisoformat(published.replace("Z", "+00:00"))
-
             cves_items.append({
                 "name": name,
                 "display_name": latest_item["display_name"],
@@ -135,7 +141,7 @@ def vulnerabilities_api_overview(request):
                 "patched_version": patched_version,
                 "url": url,
                 "fixed_label_color": fixed_label_color,
-                "published": published.isoformat() if published else None
+                "published": published_date.isoformat() if published else None
             })
 
     return JsonResponse(cves_items, safe=False)
