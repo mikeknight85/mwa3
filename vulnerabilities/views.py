@@ -118,15 +118,7 @@ def vulnerabilities_api_overview(request):
             else:
                 fixed_label_color = "secondary"
 
-            ref = cve["cve"]["references"]
-            url = None
-            if ref:
-                for r in ref:
-                    if "url" in r and ("nvd.nist.gov" in r["url"] or r["url"].startswith("https://")):
-                        url = r["url"]
-                        break
-            if not url:
-                url = f"https://nvd.nist.gov/vuln/detail/{cve['cve']['id']}"
+            url = f"https://nvd.nist.gov/vuln/detail/{cve['cve']['id']}"
 
             published = cve["cve"].get("published")
             if published:
