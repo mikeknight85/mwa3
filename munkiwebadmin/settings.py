@@ -324,7 +324,7 @@ if CLIENT_SECRET:
         AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + (AdfsAuthCodeBackend, AdfsAccessTokenBackend)
 
 LOGIN_URL='/login/'
-LOGIN_REDIRECT_URL = '/dasboard/'
+LOGIN_REDIRECT_URL = '/dashboard/'
 
 if ENTRA_ONLY:
     LOGIN_URL = "django_auth_adfs:login"
