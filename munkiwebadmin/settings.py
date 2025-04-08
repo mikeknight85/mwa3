@@ -58,6 +58,10 @@ ENABLE_REPO_VIEW = os.getenv('ENABLE_REPO_VIEW', 'False').lower() in ('true', '1
 CATALOGS_TO_DISPLAY = os.getenv('CATALOGS_TO_DISPLAY', '[]').split()
 SHOW_ICONS = os.getenv('SHOW_ICONS', 'False').lower() in ('true', '1', 't')
 
+# nist
+NIST_API_KEY = os.getenv('NIST_API_KEY', None)
+
+
 # CORS settings
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_ORIGIN_WHITELIST = ()
@@ -202,7 +206,6 @@ TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
 
 LOGLEVEL = 'WARNING'
 
