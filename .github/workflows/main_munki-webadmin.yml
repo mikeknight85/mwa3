@@ -1,5 +1,4 @@
-name: Build and deploy Python app to Azure Web App munkiwebadmin
-
+name: test build
 on:
   push:
     branches:
