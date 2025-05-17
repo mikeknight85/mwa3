@@ -105,20 +105,15 @@
                                 Icons
                             </a>
                         </li>
-                        {% endif %}  
-                        {% if NIST_API_KEY %}
+
                         <li class="sidebar-header">Security</li>
                         <li class="">
-                            <a class="sidebar-link nav-link{% if page == 'vulnerabilities' %} active{% endif %} position-relative" href="{% url 'vulnerabilities' %}">
+                            <a class="sidebar-link nav-link{% if page == 'vulnerabilities' %} active{% endif %}" href="{% url 'vulnerabilities' %}">
                                 <i class="fa-solid fa-shield-halved fa-fw"></i>
                                 Vulnerabilities
-                                <span class="position-absolute top-0 start-100 translate-middle badge bg-danger">
-                                    Beta
-                                    <span class="visually-hidden">Beta</span>
-                                  </span>
                             </a>
                         </li>
-                        {% endif %}
+                        {% endif %}  
                         {% endif %}
                     </ul>
                 </div>
