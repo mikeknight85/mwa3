@@ -133,3 +133,8 @@ a.sidebar-link {
     line-height: 1;
 }
 
+.active-admins-label .admins-text {
+    position: relative;
+    top: 0.15em;
+}
+
