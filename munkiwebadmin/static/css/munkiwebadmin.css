@@ -122,8 +122,14 @@ a.sidebar-link {
 }
 
 /* Make the emoji in the online admins badge larger */
+.active-admins-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+}
+
 .active-admins-label .emoji {
     font-size: 1.5em;
-    vertical-align: middle;
+    line-height: 1;
 }
 
