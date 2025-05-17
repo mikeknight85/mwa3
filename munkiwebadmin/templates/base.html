@@ -137,11 +137,7 @@
                             {% if user.is_authenticated %}
                             <li class="nav-item dropdown">
                                 <button class="btn" id="activeUsersBadge" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-user-clock"></i>
-                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        {{ active_user_count }}
-                                        <span class="visually-hidden">active users</span>
-                                      </span>
+                                    <span class="active-admins-label">👥 <span class="active-admins-count">{{ active_user_count }}</span> Online</span>
                                 </button>
                             </li>
                             {% endif %}

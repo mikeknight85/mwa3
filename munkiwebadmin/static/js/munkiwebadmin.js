@@ -89,7 +89,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Anzahl der aktiven Benutzer aktualisieren
             const activeUserCount = data.active_users.length;
-            badgeElement.querySelector(".badge").textContent = activeUserCount;
+            const countSpan = badgeElement.querySelector(".active-admins-count");
+            if (countSpan) {
+                countSpan.textContent = activeUserCount;
+            }
 
             // Dropdown-Inhalt neu setzen
             dropdownMenu.innerHTML = "";
