@@ -123,13 +123,13 @@
             <!-- ========= Main section ======= -->
             <div class="main">
                 <!-- ========= Main navbar section ======= -->
-                <nav class="navbar navbar-expand px-3 border-bottom">
+                <nav class="navbar navbar-expand px-3 border-bottom d-flex align-items-center">
                     <button class="btn" id="sidebar-toggle" type="button">
                         <span class="navbar-toggler-icon"></span>
                     </button>
 
-                    <form class="container-fluid search-box" role="search">
-                        <input class="form-control me-2" type="search" id="listSearchField" placeholder="Search" value="{{search}}">
+                    <form class="search-box flex-shrink-1" role="search" style="max-width: 250px; min-width: 150px;">
+                        <input class="form-control form-control-sm me-2" type="search" id="listSearchField" placeholder="Search" value="{{search}}">
                     </form>
                     
                     <div class="navbar-collapse">
