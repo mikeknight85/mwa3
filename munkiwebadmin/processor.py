@@ -32,6 +32,11 @@ try:
 except:
     ENABLE_REPO_VIEW = None
 
+try:
+    NIST_API_KEY = settings.NIST_API_KEY
+except:
+    NIST_API_KEY = None
+
 def index(request):
     """
     Provides context variables for templates, including the user's profile picture.
@@ -76,6 +81,7 @@ def index(request):
         'ENABLE_REPO_VIEW': ENABLE_REPO_VIEW,
         'ENTRA_ONLY': ENTRA_ONLY,
         'TENANT_ID': TENANT_ID,
+        'NIST_API_KEY': NIST_API_KEY,
         'APPNAME': APPNAME,
         'userImage': imgString
     }

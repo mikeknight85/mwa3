@@ -1,6 +1,3 @@
-import json
-import os
-
 import requests
 import base64
 from datetime import datetime, timedelta
@@ -9,26 +6,41 @@ from django.http import JsonResponse
 from django.conf import settings
 from packaging.version import parse as parse_version
 from api.models import MunkiRepo
+from concurrent.futures import ThreadPoolExecutor
 
-def load_mapping():
-    path = os.path.join(settings.BASE_DIR, 'data', 'mapping.json')
-    with open(path, 'r') as f:
-        return json.load(f)
+from django.contrib.auth.decorators import login_required
 
-def query_nvd_for_cpe(nist_vendor, nist_product, version):
-    cpe = f"cpe:2.3:a:{nist_vendor}:{nist_product}:{version}:*:*:*:*:*:*:*"
-    url = f"https://services.nvd.nist.gov/rest/json/cves/2.0"
+def fetch_cves_for_offset(offset, cpe, url, headers):
+    start = datetime.now() - timedelta(days=offset + 120)
+    end = datetime.now() - timedelta(days=offset)
 
     try:
         response = requests.get(url, params={
-            "cpeName": cpe
-        })
+            "cpeName": cpe,
+            "pubStartDate": start.isoformat(),
+            "pubEndDate": end.isoformat(),
+            "resultsPerPage": 500
+        }, headers=headers)
+
         response.raise_for_status()
         data = response.json()
         return data.get("vulnerabilities", [])
     except Exception as e:
         print(f"Error for {cpe}: {e}")
         return []
+
+def query_nvd_for_cpe(nist_vendor, nist_product):
+    cpe = f"cpe:2.3:a:{nist_vendor}:{nist_product}:-:*:*:*:*:macos:*:*"
+    url = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+    headers = {"apiKey": settings.NIST_API_KEY}
+    all_cves = []
+
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = [executor.submit(fetch_cves_for_offset, offset, cpe, url, headers) for offset in [0, 120, 240]]
+        for future in futures:
+            all_cves.extend(future.result())
+
+    return all_cves
 
 def extract_patch_version(cve):
     try:
@@ -68,20 +80,28 @@ def classify_severity(score):
     else:
         return "Low"
 
+@login_required
 def vulnerabilities_overview(request):
     return render(request, "vulnerabilities/overview.html", context={"page": "vulnerabilities"})
 
+@login_required
 def vulnerabilities_api_overview(request):
-    mapping_data = load_mapping()
-
     catalog = MunkiRepo.read("catalogs", "all")
     cves_items = []
 
     all_versions = {}
     for item in catalog:
-        name = item["name"]
-        if name not in mapping_data:
+        name = item["name"]  
+
+        nist_info = item.get("nist_info", None)
+        if not nist_info:
             continue
+
+        nist_vendor = nist_info.get("vendor", None)
+        nist_product = nist_info.get("product", None)
+        if not nist_vendor or not nist_product:
+            continue
+
         if name not in all_versions:
             all_versions[name] = []
         all_versions[name].append(item)
@@ -89,11 +109,10 @@ def vulnerabilities_api_overview(request):
     for name, items in all_versions.items():
         latest_item = sorted(items, key=lambda x: parse_version(x["version"]), reverse=True)[0]
         version = latest_item["version"]
-        mapping = mapping_data[name]
 
-        # Use the years_threshold value from the mapping for each product
-        years_threshold = mapping.get("years_threshold", 4)  # Default to 4 years if not present
-        four_years_ago = datetime.now() - timedelta(days=years_threshold * 365)
+        nist_info = latest_item.get("nist_info", None)
+        nist_vendor = nist_info.get("vendor", None)
+        nist_product = nist_info.get("product", None)
 
         # get icon
         icon_name = latest_item.get('icon_name', latest_item['name'] + '.png')
@@ -103,19 +122,12 @@ def vulnerabilities_api_overview(request):
             icon_path = MunkiRepo.get('icons', icon_name)
             latest_item['icon'] = f"data:image/png;base64,{base64.b64encode(icon_path).decode('utf-8')}"
 
-        cves = query_nvd_for_cpe(mapping["nist_vendor"], mapping["nist_product"], version)
+        cves = query_nvd_for_cpe(nist_vendor, nist_product)
 
         for cve in cves:
             score = extract_cvss_score(cve)
             severity = classify_severity(score)
             patched_version = extract_patch_version(cve)
-
-            # Check if CVE is older than the threshold years and skip it if so
-            published = cve["cve"].get("published")
-            if published:
-                published_date = datetime.fromisoformat(published.replace("Z", "+00:00"))
-                if published_date < four_years_ago:  # If the CVE's published date is earlier than the threshold, skip it
-                    continue  # Skip rendering this CVE
 
             if patched_version:
                 try:
@@ -141,7 +153,6 @@ def vulnerabilities_api_overview(request):
                 "patched_version": patched_version,
                 "url": url,
                 "fixed_label_color": fixed_label_color,
-                "published": published_date.isoformat() if published else None
             })
 
     return JsonResponse(cves_items, safe=False)
