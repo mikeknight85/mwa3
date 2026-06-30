@@ -3,20 +3,40 @@
 ###########
 
 # pull official base image
-FROM python:3.11-slim as builder
+FROM python:3.14-slim AS builder
 
 # set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # install system dependencies
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y gcc default-libmysqlclient-dev python3-dev \
-    libxml2-dev libxslt1-dev zlib1g-dev libsasl2-dev libldap2-dev \
-    build-essential libssl-dev libffi-dev libjpeg-dev \
-    libpq-dev liblcms2-dev libblas-dev libatlas-base-dev pkg-config curl unzip \
-    git fuse3 libfuse3-dev golang p7zip-full \
+    && apt-get install -y --no-install-recommends \
+    gcc \
+    default-libmysqlclient-dev \
+    python3-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    libsasl2-dev \
+    libldap2-dev \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libjpeg-dev \
+    libpq-dev \
+    liblcms2-dev \
+    libblas-dev \
+    libopenblas-dev \
+    pkg-config \
+    curl \
+    unzip \
+    git \
+    fuse3 \
+    libfuse3-dev \
+    golang \
+    p7zip-full \
     && rm -rf /var/lib/apt/lists/*
 
 # set work directory
@@ -42,7 +62,10 @@ RUN curl -Lk -o /tmp/munkitools.zip `curl --silent https://api.github.com/repos/
 #########
 
 # pull official base image
-FROM python:3.11-slim
+FROM python:3.14-slim
+
+# create the app user
+RUN groupadd -r app && useradd -r -g app app
 
 # create directory for the app user
 RUN mkdir -p /home/app
@@ -50,8 +73,8 @@ RUN mkdir /munkirepo
 RUN mkdir /munkitools
 
 # create the appropriate directories
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
+ENV HOME=/home/app \
+    APP_HOME=/home/app/web
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
@@ -73,6 +96,14 @@ COPY munkiwebadmin/munkiwebadmin.conf /etc/nginx/sites-available/default
 # static files
 RUN mkdir $APP_HOME/staticfiles
 RUN python manage.py collectstatic --noinput
+
+# chown all the files to the app user
+RUN chown -R app:app $APP_HOME
+RUN chown -R app:app /munkirepo
+RUN chown -R app:app /munkitools
+
+# change to the app user
+USER app
 
 # volumes
 VOLUME [ "/munkirepo" ]
